@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace MultiUrls.Utils
 {
-    internal class Config
+    internal class TikTok
     {
-        public static string version = "1.0.0";
     }
 }

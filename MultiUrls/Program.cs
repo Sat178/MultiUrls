@@ -11,6 +11,9 @@ namespace MultiUrls
         [STAThread]
         static void Main(string[] args)
         {
+            MultiUrls.Utils.Startup.Routine("1.0.0");
+            MultiUrls.Utils.Startup.ConvertMode();
+            Console.ReadKey();
         }
     }
 }

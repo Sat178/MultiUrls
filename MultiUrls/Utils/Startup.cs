@@ -14,6 +14,13 @@ namespace MultiUrls.Utils
     {
         public static string buildLocation = AppDomain.CurrentDomain.BaseDirectory;
         public static string osTime = DateTime.Now.ToString("dd-MM-yyyy");
+        public static bool auto = false;
+        public static List<string> rawUrls = new List<string>();
+
+        public static int redditCount = 0;
+        public static int twitterCount = 0;
+        public static int youtubeCount = 0;
+        public static int tiktokCount = 0;
 
         public static void Routine(string vNumber)
         {
@@ -48,27 +55,69 @@ namespace MultiUrls.Utils
 
         public static void ConvertMode()
         {
-            Console.Write("Manually [M] or Automatically [A]");
-            //while (!(Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.M || Console.ReadKey(true).Key == ConsoleKey.A)));
+            Console.Write("Manually [M] or Automatically [A]\n");
 
-            if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.M)) { Manual(); }
-            else if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.A)) { Auto(); }
-            else { Console.Clear(); ConvertMode(); }
-                
+            ConsoleKeyInfo cki;
+            cki = Console.ReadKey(true); // Read key
 
-
-            // Manually
-
-            
+            do
+            {
+                if (cki.Key == ConsoleKey.M)
+                    auto = false; Console.Clear(); Worker();
+                if (cki.Key == ConsoleKey.A)
+                    auto = true; Console.Clear(); Worker();
+            }
+            while (cki.Key != ConsoleKey.M && cki.Key != ConsoleKey.A); // Read key press
         }
-        public static void Manual()
+        public static void Worker()
         {
+            if (auto == true)
+            {
+                using (OpenFileDialog ofd = new OpenFileDialog()) // Open file
+                {
+                    ofd.Title = "Open your url file!";
+                    ofd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                    ofd.FilterIndex = 2;
+                    ofd.RestoreDirectory = true;
 
+                    bool drOk = ofd.ShowDialog() == DialogResult.OK; // Succeed
+
+                    if (drOk)
+                    {
+                        string filePath = ofd.FileName;
+                        string[] fileUrls = File.ReadAllLines(filePath);
+                        foreach (var Url in fileUrls) // Add urls to List<string>
+                            rawUrls.Add(Url);
+                        foreach (string Url in rawUrls) // Perform recognizion
+                            Recognize(Url);
+                    }
+                }
+            }
         }
 
-        public static void Auto()
+        public static void Recognize(string Url)
         {
-
+            if (Url.Contains("reddit.com"))
+            {
+                redditCount++;
+                // reddit
+            } 
+            else if (Url.Contains("tiktok.com"))
+            {
+                tiktokCount++;
+                Utils.TikTok.TikTokAPI(Url);
+                // tiktok
+            } 
+            else if (Url.Contains("youtube.com"))
+            {
+                youtubeCount++;
+                // youtube
+            }
+            else if (Url.Contains("twitter.com"))
+            {
+                twitterCount++;
+                // twitter
+            }
         }
 
 

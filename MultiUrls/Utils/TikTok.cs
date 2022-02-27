@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Leaf.xNet;
@@ -11,6 +12,8 @@ namespace MultiUrls.Utils
     internal class TikTok
     {
         public static string postRequest = string.Empty;
+        public static List<string> prLoad = new List<string>();
+        public static int prAmount = 0;
         public static void TikTokAPI(string req)
         {
             string payload = String.Concat(new string[]
@@ -47,9 +50,9 @@ namespace MultiUrls.Utils
                 try
                 {
                     JObject jobj = JObject.Parse(postRequest);
-                    string tikToken = jobj.SelectToken("token").ToString();
-                    string tikID = jobj.SelectToken("id").ToString();
-                    string creationDate = jobj.SelectToken("create_time").ToString();
+                    var tikToken = jobj.SelectToken("token").ToString();
+                    var tikID = jobj.SelectToken("id").ToString();
+                    var creationDate = jobj.SelectToken("create_time").ToString();
 
 
                     string downloadUrl = string.Concat(new string[]
@@ -61,8 +64,10 @@ namespace MultiUrls.Utils
                     ".mp4?hd=1"
                     });
 
-                    Console.WriteLine(downloadUrl);
-                    //Parser(Utils.tikUrl);
+                    prAmount++;
+                    prLoad.Add(downloadUrl);
+                    Task.Run(()=> Downloader(downloadUrl));
+                    Console.WriteLine($"Asyncing the download of #{prAmount}: {downloadUrl}");
                 }
                 catch (Exception e)
                 {
@@ -70,6 +75,17 @@ namespace MultiUrls.Utils
                     return;
                 }
 
+            }
+        }
+
+        public static async void Downloader(string downloadUrl)
+        {
+            using (WebClient wc = new WebClient())
+            {
+                Console.WriteLine("Starting Task!");
+                wc.DownloadFile(downloadUrl, AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
+                Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
+                return;
             }
         }
     }

@@ -12,7 +12,6 @@ namespace MultiUrls
         static void Main(string[] args)
         {
             MultiUrls.Utils.Startup.Routine("1.0.0");
-            Utils.TikTok.ttUpdate();
             MultiUrls.Utils.Startup.ConvertMode();
             
             Console.ReadKey();

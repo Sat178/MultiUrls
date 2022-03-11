@@ -105,6 +105,7 @@ namespace MultiUrls.Utils
             else if (Url.Contains("tiktok.com"))
             {
                 tiktokCount++;
+                Utils.TikTok.ttUpdate();
                 Utils.TikTok.TikTokAPI(Url,tiktokCount);
                 // tiktok
             } 

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
+using Console = Colorful.Console;
 
 namespace MultiUrls.Utils
 {
@@ -14,7 +16,28 @@ namespace MultiUrls.Utils
         public static string postRequest = string.Empty;
         public static List<string> prLoad = new List<string>();
         public static int prAmount = 0;
-        public static void TikTokAPI(string req)
+
+        public static int finishedDL = 0;
+        public static int startDL = 0;
+        public static int totalDL = 0;
+
+        public static void ttUpdate()
+        {
+            Task.Factory.StartNew(delegate()
+            {
+                for (;;)
+                {
+                    Console.Title = String.Format("Module TikTok - Downloading: {0}/{2} - Finished:{1}/{2} - ", new object[]
+                    {
+                        startDL,
+                        finishedDL,
+                        totalDL
+                    });
+                }
+            });
+            
+        }
+        public static void TikTokAPI(string req, int urlNumber)
         {
             string payload = String.Concat(new string[]
             {
@@ -39,7 +62,7 @@ namespace MultiUrls.Utils
                 {
                     if (postRequest == string.Empty)
                     {
-                        Console.WriteLine("Unreachable video!");
+                        Console.WriteLine("Unreachable video!", Color.DarkRed);
                     } 
                     else
                     {
@@ -66,8 +89,9 @@ namespace MultiUrls.Utils
 
                     prAmount++;
                     prLoad.Add(downloadUrl);
-                    Task.Run(()=> Downloader(downloadUrl));
-                    Console.WriteLine($"Asyncing the download of #{prAmount}: {downloadUrl}");
+                    Task.Run(()=> Downloader(downloadUrl, urlNumber));
+                    Console.WriteLine("Starting download #{0}", urlNumber, Color.DarkOrange);
+                    //Console.WriteLine($"Asyncing the download of #{prAmount}: {downloadUrl}");
                 }
                 catch (Exception e)
                 {
@@ -78,13 +102,16 @@ namespace MultiUrls.Utils
             }
         }
 
-        public static async void Downloader(string downloadUrl)
+        public static async void Downloader(string downloadUrl, int urlNumber)
         {
             using (WebClient wc = new WebClient())
             {
-                Console.WriteLine("Starting Task!");
+                startDL++;
                 wc.DownloadFile(downloadUrl, AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
-                Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
+                //Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
+                Console.WriteLine("Finished downloading #{0}", urlNumber, Color.ForestGreen);
+                wc.Dispose();
+                finishedDL++;
                 return;
             }
         }

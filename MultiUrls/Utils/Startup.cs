@@ -87,8 +87,8 @@ namespace MultiUrls.Utils
                         string filePath = ofd.FileName;
                         string[] fileUrls = File.ReadAllLines(filePath);
                         foreach (var Url in fileUrls) // Add urls to List<string>
-                            rawUrls.Add(Url);
-                        foreach (string Url in rawUrls) // Perform recognizion
+                        {rawUrls.Add(Url); TikTok.totalDL++;}
+                        foreach (string Url in rawUrls) // Perform recognision
                             Recognize(Url);
                     }
                 }
@@ -105,7 +105,7 @@ namespace MultiUrls.Utils
             else if (Url.Contains("tiktok.com"))
             {
                 tiktokCount++;
-                Utils.TikTok.TikTokAPI(Url);
+                Utils.TikTok.TikTokAPI(Url,tiktokCount);
                 // tiktok
             } 
             else if (Url.Contains("youtube.com"))

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
 using Console = Colorful.Console;
@@ -20,6 +21,10 @@ namespace MultiUrls.Utils
         public static int finishedDL = 0;
         public static int startDL = 0;
         public static int totalDL = 0;
+
+        public static string tInfoID = string.Empty;
+        public static string tInfoAuthor = string.Empty;
+        public static string tInfoCreation = string.Empty;
 
         public static void ttUpdate()
         {
@@ -72,10 +77,15 @@ namespace MultiUrls.Utils
 
                 try
                 {
+                    Console.WriteLine(postRequest);
                     JObject jobj = JObject.Parse(postRequest);
                     var tikToken = jobj.SelectToken("token").ToString();
                     var tikID = jobj.SelectToken("id").ToString();
                     var creationDate = jobj.SelectToken("create_time").ToString();
+                    tInfoAuthor = jobj.SelectToken("author_id").ToString();
+                    tInfoID = jobj.SelectToken("id").ToString();
+                    tInfoCreation = jobj.SelectToken("create_time").ToString();
+
 
 
                     string downloadUrl = string.Concat(new string[]
@@ -106,8 +116,16 @@ namespace MultiUrls.Utils
         {
             using (WebClient wc = new WebClient())
             {
+                var fileName = string.Format("{0}-{1}-{2}", new object[]
+                {
+                    tInfoAuthor,
+                    tInfoID,
+                    tInfoCreation
+
+                });
+
                 startDL++;
-                wc.DownloadFile(downloadUrl, AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
+                wc.DownloadFile(downloadUrl, AppDomain.CurrentDomain.BaseDirectory + $"\\{fileName}.mp4");
                 //Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + $"\\{prAmount}.mp4");
                 Console.WriteLine("Finished downloading #{0}", urlNumber, Color.ForestGreen);
                 wc.Dispose();
